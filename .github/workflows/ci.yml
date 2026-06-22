@@ -8,7 +8,7 @@ on:
       - main
 
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "*/5 * * * *"
 
 jobs:
   testes-e-relatorio:
