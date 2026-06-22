@@ -1,0 +1,40 @@
+name: "CI - Testes Automatizados"
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches:
+      - main
+
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  testes-e-relatorio:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+
+      # As dependências são instaladas na máquina onde o teste vai rodar
+      - name: Instalando dependências
+        run: npm install
+
+      # O teste roda e o output é jogado para a pasta de reports de uma vez só
+      - name: Executando testes e gerando relatório
+        run: |
+          mkdir reports
+          npm test > reports/resultado.txt
+
+      # O artefato é salvo sempre (mesmo se o teste falhar), garantindo o relatório na pipeline
+      - name: Salvando relatório de testes
+        uses: actions/upload-artifact@v4
+        if: ${{ always() }}
+        with:
+          path: ./reports
+          name: Relatorio-Testes
